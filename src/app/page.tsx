@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import React from 'react';
-import Admin from './admin/page';
 
 const Page = () => {
   return (
