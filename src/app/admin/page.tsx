@@ -36,39 +36,36 @@ export default function AdminLayout({
   }, [pathname, router]);
 
   return (
-    <div className="flex w-full min-h-screen bg-gray-100">
-      <div className="h-screen w-64 bg-white shadow-lg flex flex-col p-4">
-        <div className="flex flex-col items-center gap-3 border-b pb-4">
-          <Image
-            src={logo}
-            alt="Logo"
-            width={60}
-            height={60}
-            className="rounded-full border-4 border-white shadow-md"
-          />
-          <h1 className="text-2xl font-bold text-gray-800">Admin Panel</h1>
-        </div>
-
-        <ul className="mt-4 space-y-2 px-3">
-          {menuItems.map((item) => (
-            <li
-              key={item.path}
-              className={`flex items-center gap-3 p-3 text-lg font-medium cursor-pointer rounded-lg transition-all duration-300 group ${
-                pathname === item.path
-                  ? "bg-blue-100 text-blue-600"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
-              onClick={() => router.push(item.path)}
-            >
-              <span className="text-2xl">{item.icon}</span>
-              <span className="group-hover:translate-x-1 transition-transform duration-200">
-                {item.name}
-              </span>
-            </li>
-          ))}
-        </ul>
+    <div className="h-screen w-64 bg-white shadow-lg flex flex-col p-4">
+      <div className="flex flex-col items-center gap-3 border-b pb-4">
+        <Image
+          src={logo}
+          alt="Logo"
+          width={60}
+          height={60}
+          className="rounded-full border-4 border-white shadow-md"
+        />
+        <h1 className="text-2xl font-bold text-gray-800">Admin Panel</h1>
       </div>
-      <div className="ml-64 w-full p-6">{children}</div>
+
+      <ul className="mt-4 space-y-2 px-3">
+        {menuItems.map((item) => (
+          <li
+            key={item.path}
+            className={`flex items-center gap-3 p-3 text-lg font-medium cursor-pointer rounded-lg transition-all duration-300 group ${
+              pathname === item.path
+                ? "bg-blue-100 text-blue-600"
+                : "text-gray-700 hover:bg-gray-100"
+            }`}
+            onClick={() => router.push(item.path)}
+          >
+            <span className="text-2xl">{item.icon}</span>
+            <span className="group-hover:translate-x-1 transition-transform duration-200">
+              {item.name}
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

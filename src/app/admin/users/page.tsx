@@ -8,7 +8,7 @@ import { FaSpinner } from "react-icons/fa";
 
 type User = {
   id: string;
-  name: string;
+  username: string;
   email: string;
 };
 
@@ -41,9 +41,8 @@ export default function Users() {
     setLoading(true);
     const { data, error } = await supabase
       .from("user")
-      .select("id, name, email");
+      .select("id, username, email");
     if (error) {
-      console.error("❌ Error fetching users:", error);
       toast.error("Failed to fetch users!");
     } else {
       setUsers(data || []);
@@ -95,7 +94,7 @@ export default function Users() {
                     className="border hover:bg-gray-50 transition"
                   >
                     <td className="border p-2">{index + 1}</td>
-                    <td className="border p-2">{user.name}</td>
+                    <td className="border p-2">{user.username}</td>
                     <td className="border p-2">{user.email}</td>
                   </tr>
                 ))}

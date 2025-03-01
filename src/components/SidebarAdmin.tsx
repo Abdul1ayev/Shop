@@ -4,7 +4,7 @@ import Image from "next/image";
 import { BiSolidDashboard } from "react-icons/bi";
 import { MdOutlineCategory } from "react-icons/md";
 import { AiFillProduct } from "react-icons/ai";
-import { FaUsers } from "react-icons/fa";
+import { FaHome, FaUsers } from "react-icons/fa";
 import { FaCartArrowDown } from "react-icons/fa6";
 import logo from "../../public/Logo.png";
 
@@ -18,6 +18,7 @@ const menuItems = [
   { name: "Products", path: "/admin/products", icon: <AiFillProduct /> },
   { name: "Users", path: "/admin/users", icon: <FaUsers /> },
   { name: "Orders", path: "/admin/orders", icon: <FaCartArrowDown /> },
+  { name: "Home", path: "/", icon: <FaHome /> },
 ];
 
 export default function SidebarAdmin() {

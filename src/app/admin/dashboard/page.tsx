@@ -12,37 +12,55 @@ import {
 const supabase = createClient();
 
 export default function Dashboard() {
-  const [stats, setStats] = useState<any | null>(null);
+  const [categories, setCategories] = useState(0);
+  const [products, setProducts] = useState(0);
+  const [users, setUsers] = useState(0);
+  const [orders, setOrders] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  // Local Storage'dan o'qish
+  useEffect(() => {
+    const cachedStats = localStorage.getItem("stats");
+    if (cachedStats) {
+      try {
+        const parsedStats = JSON.parse(cachedStats);
+        setCategories(parsedStats.categories || 0);
+        setProducts(parsedStats.products || 0);
+        setUsers(parsedStats.users || 0);
+        setOrders(parsedStats.orders || 0);
+        setLoading(false);
+      } catch (error) {
+        console.error("Failed to parse cached stats:", error);
+      }
+    }
+  }, []);
+
+  // API dan ma'lumot olish va Local Storage ni yangilash
   useEffect(() => {
     const fetchStats = async () => {
-      const cachedStats = localStorage.getItem("stats");
-      if (cachedStats) {
-        setStats(JSON.parse(cachedStats));
-        setLoading(false);
-        return;
-      }
-
       try {
-        const [categories, products, users, orders] = await Promise.all([
-          supabase
-            .from("category")
-            .select("id", { count: "exact", head: true }),
-          supabase.from("product").select("id", { count: "exact", head: true }),
-          supabase.from("user").select("id", { count: "exact", head: true }),
-          supabase.from("order").select("id", { count: "exact", head: true }),
+        const [categoryRes, productRes, userRes, orderRes] = await Promise.all([
+          supabase.from("category").select("*", { count: "exact", head: true }),
+          supabase.from("product").select("*", { count: "exact", head: true }),
+          supabase.from("user").select("*", { count: "exact", head: true }),
+          supabase.from("order").select("*", { count: "exact", head: true }),
         ]);
 
         const newStats = {
-          categories: categories.count ?? 0,
-          products: products.count ?? 0,
-          users: users.count ?? 0,
-          orders: orders.count ?? 0,
+          categories: categoryRes.count ?? 0,
+          products: productRes.count ?? 0,
+          users: userRes.count ?? 0,
+          orders: orderRes.count ?? 0,
         };
 
+        // Local Storage'ni yangilash
         localStorage.setItem("stats", JSON.stringify(newStats));
-        setStats(newStats);
+
+        // State yangilash
+        setCategories(newStats.categories);
+        setProducts(newStats.products);
+        setUsers(newStats.users);
+        setOrders(newStats.orders);
       } catch (error) {
         console.error("Failed to fetch stats:", error);
       } finally {
@@ -51,13 +69,19 @@ export default function Dashboard() {
     };
 
     fetchStats();
+
+    // Har 30 soniyada yangilash
+    const interval = setInterval(fetchStats, 30000);
+
+    return () => clearInterval(interval);
   }, []);
 
+  // Stat kartalar
   const statCards = [
-    { label: "Categories", value: stats?.categories, icon: <FaLayerGroup /> },
-    { label: "Products", value: stats?.products, icon: <FaBoxOpen /> },
-    { label: "Users", value: stats?.users, icon: <FaUsers /> },
-    { label: "Orders", value: stats?.orders, icon: <FaShoppingCart /> },
+    { label: "Categories", value: categories, icon: <FaLayerGroup /> },
+    { label: "Products", value: products, icon: <FaBoxOpen /> },
+    { label: "Users", value: users, icon: <FaUsers /> },
+    { label: "Orders", value: orders, icon: <FaShoppingCart /> },
   ];
 
   return (
@@ -98,7 +122,7 @@ export default function Dashboard() {
               <h4 className="text-xl font-semibold text-gray-800">
                 Recent Sales
               </h4>
-              <p className="text-gray-600">You made {stats?.orders} sales.</p>
+              <p className="text-gray-600">You made {orders} sales.</p>
             </div>
           </>
         )}

@@ -1,12 +1,17 @@
-import Link from 'next/link';
-import React from 'react';
-
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
+import React from "react";
+import Product from "./(product)/page";
+import Section from "@/components/Section";
 const Page = () => {
   return (
     <div>
-      <Link href="admin/dashboard"  className='btn btn-dark w-1/12 d-block mx-auto my-3' >Admin page</Link>
+      <Navbar />
+      <Section/>
+      <Product />
+      <Footer />
     </div>
   );
-}
+};
 
 export default Page;
