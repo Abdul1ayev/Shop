@@ -19,7 +19,7 @@ type Product = {
   category_id: string;
   description: string;
   price: string;
-  images: string[]; 
+  images: string[];
   active: boolean;
 };
 
@@ -38,7 +38,7 @@ export default function Products() {
     price: "0",
     category_id: "",
     active: false,
-    images: [] as string[], 
+    images: [] as string[],
   });
 
   useEffect(() => {
@@ -91,7 +91,7 @@ export default function Products() {
       price: formData.price,
       active: formData.active,
       category_id: formData.category_id,
-      images: formData.images, // Base64 formatida rasmlar
+      images: formData.images,
     };
 
     const { error } = await supabase
@@ -131,7 +131,6 @@ export default function Products() {
     fetchProducts();
   }
 
-  // Rasmni base64 formatiga o'tkazish
   const handleImageUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
     isEditModal: boolean
@@ -152,6 +151,15 @@ export default function Products() {
       }
     };
     reader.readAsDataURL(files[0]);
+  };
+  const handleDeleteImage = (index: number, isEditModal: boolean) => {
+    if (isEditModal && formData) {
+      const updatedImages = formData.images.filter((_, i) => i !== index);
+      setFormData({ ...formData, images: updatedImages });
+    } else {
+      const updatedImages = newProduct.images.filter((_, i) => i !== index);
+      setNewProduct({ ...newProduct, images: updatedImages });
+    }
   };
 
   return (
@@ -235,7 +243,6 @@ export default function Products() {
         </div>
       </div>
       <ToastContainer />
-      {/* Edit Modal */}
       <Rodal
         visible={modalVisible}
         height={600}
@@ -301,14 +308,22 @@ export default function Products() {
             />
             <div className="flex flex-wrap gap-2">
               {formData.images.map((image, i) => (
-                <img
-                  key={i}
-                  src={image}
-                  alt={`Product Image ${i + 1}`}
-                  className="w-10 h-10 object-cover"
-                />
+                <div key={i} className="relative w-10 h-10">
+                  <img
+                    src={image}
+                    alt={`Product Image ${i + 1}`}
+                    className="w-full h-full object-cover rounded-md"
+                  />
+                  <div
+                    onClick={() => handleDeleteImage(i, true)}
+                    className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-xs flex items-center justify-center rounded-full cursor-pointer"
+                  >
+                    ×
+                  </div>
+                </div>
               ))}
             </div>
+
             <button
               onClick={handleUpdate}
               className="bg-green-500 text-white p-2 rounded w-full"
