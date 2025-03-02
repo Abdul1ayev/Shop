@@ -75,7 +75,6 @@ export default function Product_Detail({
     const quantity = 1;
     const totalPrice = parseFloat(product.price) * quantity;
 
-    // Avval cart jadvalidan foydalanuvchi uchun mahsulot bor-yo‘qligini tekshiramiz
     const { data: existingProduct, error } = await supabase
       .from("cart")
       .select("*")
@@ -90,7 +89,6 @@ export default function Product_Detail({
     }
 
     if (existingProduct) {
-      // Agar mahsulot allaqachon mavjud bo‘lsa, quantity va total_price ni yangilaymiz
       const newQuantity = existingProduct.quantity + quantity;
       const newTotalPrice = parseFloat(product.price) * newQuantity;
 

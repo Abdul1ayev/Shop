@@ -32,10 +32,14 @@ const Product = () => {
   const [onlyActive, setOnlyActive] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
-    fetchProducts();
-    fetchCategories();
-  }, [selectedCategory, priceRange, searchQuery, onlyActive]);
+    const fetchData = async () => {
+      setLoading(true);
+      await fetchProducts();
+      await fetchCategories();
+      setLoading(false);
+    };
+    fetchData();
+  }, [supabase]);
 
   const fetchProducts = async () => {
     const { data, error } = await supabase
@@ -76,63 +80,50 @@ const Product = () => {
 
   return (
     <div className="container mx-auto flex flex-row gap-6 mt-6">
+      {/* Filters */}
       <div className="w-1/4 p-4 border rounded shadow-md text-green-700 bg-gray-50">
         <h2 className="text-lg font-bold mb-4">Filters</h2>
 
-        {loading ? (
-          <Skeleton height={40} />
-        ) : (
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="border text-green-600 p-2 rounded form-control w-full mb-3 focus:ring-2 focus:ring-green-500 focus:outline-none"
-          />
-        )}
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="border text-green-600 p-2 rounded form-control w-full mb-3 focus:ring-2 focus:ring-green-500 focus:outline-none"
+        />
 
-        {loading ? (
-          <Skeleton height={40} />
-        ) : (
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="border p-2 form-select rounded w-full mb-3 focus:ring-2 focus:ring-green-500 focus:outline-none"
-          >
-            <option value="">All Categories</option>
-            {category.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-        )}
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="border p-2 form-select rounded w-full mb-3 focus:ring-2 focus:ring-green-500 focus:outline-none"
+        >
+          <option value="">All Categories</option>
+          {category.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
 
-        {loading ? (
-          <Skeleton height={40} />
-        ) : (
-          <>
-            <input
-              type="number"
-              placeholder="Min Price"
-              value={priceRange[0]}
-              onChange={(e) => setPriceRange([+e.target.value, priceRange[1]])}
-              className="border p-2 form-control  rounded w-full mb-3 focus:ring-2 focus:ring-green-500 focus:outline-none"
-            />
-            <input
-              type="number"
-              placeholder="Max Price"
-              value={priceRange[1]}
-              onChange={(e) => setPriceRange([priceRange[0], +e.target.value])}
-              className="border p-2 form-control rounded w-full mb-3 focus:ring-2 focus:ring-green-500 focus:outline-none"
-            />
-          </>
-        )}
+        <input
+          type="number"
+          placeholder="Min Price"
+          value={priceRange[0]}
+          onChange={(e) => setPriceRange([+e.target.value, priceRange[1]])}
+          className="border p-2 form-control rounded w-full mb-3 focus:ring-2 focus:ring-green-500 focus:outline-none"
+        />
+        <input
+          type="number"
+          placeholder="Max Price"
+          value={priceRange[1]}
+          onChange={(e) => setPriceRange([priceRange[0], +e.target.value])}
+          className="border p-2 form-control rounded w-full mb-3 focus:ring-2 focus:ring-green-500 focus:outline-none"
+        />
 
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
-            checked={onlyActive }
+            checked={onlyActive}
             onChange={() => setOnlyActive(!onlyActive)}
             className="accent-green-500"
           />
@@ -140,6 +131,7 @@ const Product = () => {
         </label>
       </div>
 
+      {/* Products */}
       <div className="w-3/4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading
           ? Array(3)

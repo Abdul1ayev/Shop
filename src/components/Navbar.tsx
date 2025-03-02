@@ -1,43 +1,21 @@
 "use client";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/supabase/client";
 import { Menu, X, ShoppingCart } from "lucide-react";
 
 export default function Navbar() {
-  const [orderCount, setOrderCount] = useState(0);
+  const [cartCount, setCartCount] = useState(0);
   const [user, setUser] = useState<any>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const supabase = createClient();
   const router = useRouter();
 
   useEffect(() => {
-    const fetchOrderCount = async () => {
-      const { data, error } = await supabase.from("order").select("*");
-      if (!error) setOrderCount(data.length);
-    };
-
-    fetchOrderCount();
-
-    const channel = supabase
-      .channel("cart")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "orders" },
-        fetchOrderCount
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  useEffect(() => {
     const checkUser = async () => {
       const { data: sessionData } = await supabase.auth.getSession();
       const session = sessionData?.session;
+
       if (session?.user) {
         const { data: userData } = await supabase
           .from("user")
@@ -53,9 +31,45 @@ export default function Navbar() {
     checkUser();
   }, []);
 
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchCartCount = async () => {
+      const { data, error } = await supabase
+        .from("cart") // "cart" userning savati saqlanadigan jadval bo'lishi kerak
+        .select("id")
+        .eq("user_id", user.id);
+
+      if (!error && data) {
+        setCartCount(data.length);
+      }
+    };
+
+    fetchCartCount();
+
+    const channel = supabase
+      .channel("cart-updates")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "cart",
+          filter: `user_id=eq.${user.id}`,
+        },
+        fetchCartCount
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
+    setCartCount(0);
     router.push("/");
   };
 
@@ -75,7 +89,7 @@ export default function Navbar() {
         </div>
 
         <ul
-          className={`md:flex md:items-center md:space-x-6 absolute md:static bg-white w-full md:w-auto top-16 left-0 transition-all duration-300 ease-in-out p-4 md:p-0 shadow-md md:shadow-none  rounded-md md:rounded-none ${
+          className={`md:flex md:items-center md:space-x-6 absolute md:static bg-white w-full md:w-auto top-16 left-0 transition-all duration-300 ease-in-out p-4 md:p-0 shadow-md md:shadow-none rounded-md md:rounded-none ${
             menuOpen ? "block" : "hidden"
           }`}
         >
@@ -119,12 +133,12 @@ export default function Navbar() {
           <li className="relative">
             <button
               onClick={() => router.push("/cart")}
-              className="border-green-700 block mx-auto border-2 text-green-700 hover:text-green-500 hover:border-green-500 transition-all py-2 px-4 rounded mt-4"
+              className="relative flex items-center gap-2 border-2 border-green-700 text-green-700 hover:text-green-500 hover:border-green-500 transition-all py-2 px-4 rounded mt-4"
             >
               <ShoppingCart size={22} />
-              {orderCount > 0 && (
-                <span className="absolute -top-2 -right-3 bg-red-600 text-white text-xs rounded-full px-2">
-                  {orderCount}
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full px-2">
+                  {cartCount}
                 </span>
               )}
             </button>
