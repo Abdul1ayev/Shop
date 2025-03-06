@@ -79,9 +79,8 @@ const Product = () => {
   });
 
   return (
-    <div className="container mx-auto flex flex-row gap-6 mt-6">
-      {/* Filters */}
-      <div className="w-1/4 p-4 border rounded shadow-md text-green-700 bg-gray-50">
+    <div className="container mx-auto flex flex-col md:flex-row gap-6 mt-6">
+      <div className="w-full md:w-1/4 p-4 border rounded shadow-md text-green-700 bg-gray-50">
         <h2 className="text-lg font-bold mb-4">Filters</h2>
 
         <input
@@ -89,13 +88,13 @@ const Product = () => {
           placeholder="Search..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="border text-green-600 p-2 rounded form-control w-full mb-3 focus:ring-2 focus:ring-green-500 focus:outline-none"
+          className="border text-green-600 p-2 rounded w-full mb-3 focus:ring-2 focus:ring-green-500 focus:outline-none"
         />
 
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="border p-2 form-select rounded w-full mb-3 focus:ring-2 focus:ring-green-500 focus:outline-none"
+          className="border p-2 rounded w-full mb-3 focus:ring-2 focus:ring-green-500 focus:outline-none"
         >
           <option value="">All Categories</option>
           {category.map((cat) => (
@@ -105,22 +104,24 @@ const Product = () => {
           ))}
         </select>
 
-        <input
-          type="number"
-          placeholder="Min Price"
-          value={priceRange[0]}
-          onChange={(e) => setPriceRange([+e.target.value, priceRange[1]])}
-          className="border p-2 form-control rounded w-full mb-3 focus:ring-2 focus:ring-green-500 focus:outline-none"
-        />
-        <input
-          type="number"
-          placeholder="Max Price"
-          value={priceRange[1]}
-          onChange={(e) => setPriceRange([priceRange[0], +e.target.value])}
-          className="border p-2 form-control rounded w-full mb-3 focus:ring-2 focus:ring-green-500 focus:outline-none"
-        />
+        <div className="flex gap-2">
+          <input
+            type="number"
+            placeholder="Min Price"
+            value={priceRange[0]}
+            onChange={(e) => setPriceRange([+e.target.value, priceRange[1]])}
+            className="border p-2 rounded w-1/2 focus:ring-2 focus:ring-green-500 focus:outline-none"
+          />
+          <input
+            type="number"
+            placeholder="Max Price"
+            value={priceRange[1]}
+            onChange={(e) => setPriceRange([priceRange[0], +e.target.value])}
+            className="border p-2 rounded w-1/2 focus:ring-2 focus:ring-green-500 focus:outline-none"
+          />
+        </div>
 
-        <label className="flex items-center gap-2 cursor-pointer">
+        <label className="flex items-center gap-2 cursor-pointer mt-3">
           <input
             type="checkbox"
             checked={onlyActive}
@@ -131,8 +132,7 @@ const Product = () => {
         </label>
       </div>
 
-      {/* Products */}
-      <div className="w-3/4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {loading
           ? Array(3)
               .fill(0)
@@ -180,7 +180,7 @@ const Product = () => {
                   </div>
                   <button
                     onClick={() => router.push(`/products/${product.id}`)}
-                    className="border-green-700 block border-2 w-1/2 mx-auto text-green-700 hover:text-green-500 hover:border-green-500 transition-all py-2 px-4 rounded mt-4"
+                    className="border-green-700 block border-2  mx-auto text-green-700 hover:text-green-500 hover:border-green-500 transition-all py-2 px-4 rounded mt-4"
                   >
                     View Details
                   </button>

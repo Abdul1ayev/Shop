@@ -5,6 +5,7 @@ import { createClient } from "@/supabase/client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaTrash } from "react-icons/fa";
+import { IoMdArrowBack } from "react-icons/io";
 
 const supabase = createClient();
 
@@ -14,6 +15,7 @@ type Order = {
   address: string;
   total_price: number;
   created_at: string;
+  status: string;
 };
 
 type OrderItem = {
@@ -37,7 +39,7 @@ const MyOrders = () => {
     const fetchOrders = async () => {
       const { data, error } = await supabase.auth.getSession();
       if (error) {
-        console.error("Session error:", error);
+        console.error(error);
         setLoading(false);
         return;
       }
@@ -55,7 +57,7 @@ const MyOrders = () => {
         .order("created_at", { ascending: false });
 
       if (ordersError) {
-        console.error("Error fetching orders:", ordersError);
+        console.error(error);
       } else {
         setOrders(ordersData || []);
         ordersData.forEach((order) => fetchOrderItems(order.id));
@@ -70,10 +72,6 @@ const MyOrders = () => {
         .eq("order_id", orderId);
 
       if (error) {
-        console.error(
-          `Error fetching order items for order ${orderId}:`,
-          error.message || error
-        );
         return;
       }
 
@@ -116,6 +114,22 @@ const MyOrders = () => {
   }, [router]);
 
   const deleteOrder = async (orderId: string) => {
+    const { data: orderData, error: orderFetchError } = await supabase
+      .from("orders")
+      .select("status")
+      .eq("id", orderId)
+      .single();
+
+    if (orderFetchError) {
+      console.error("Error fetching order status:", orderFetchError.message);
+      return;
+    }
+
+    if (orderData?.status === "completed") {
+      alert("This order has been completed and cannot be deleted.");
+      return;
+    }
+
     const { error: itemsError } = await supabase
       .from("order_items")
       .delete()
@@ -158,10 +172,17 @@ const MyOrders = () => {
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Navbar />
       <div className="flex-grow p-6">
-        <h1 className="text-3xl font-semibold text-center mb-8 text-green-700">
+        {" "}
+        <button
+          onClick={() => router.push("/cabinet")}
+          className="border-green-700 mx-auto flex items-center gap-2 text-xl mb-4 border-2 text-green-700 hover:text-green-500 py-2 px-4 rounded"
+        >
+          <IoMdArrowBack />
+          Back
+        </button>
+        <h1 className="text-3xl  font-semibold text-center mb-8 text-green-700">
           My Orders
         </h1>
-
         {loading ? (
           <div className="text-center text-lg font-medium">Loading...</div>
         ) : orders.length === 0 ? (
@@ -184,6 +205,9 @@ const MyOrders = () => {
                 <p className="text-gray-600">
                   <span className="font-medium">Total Price:</span> $
                   {order.total_price}
+                </p>
+                <p className="text-gray-600">
+                  <span className="font-medium">Status:</span> {order.status}
                 </p>
                 <p className="text-gray-500 text-sm">
                   Ordered on: {new Date(order.created_at).toLocaleDateString()}

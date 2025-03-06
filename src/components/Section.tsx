@@ -6,8 +6,9 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 const Section = () => {
   return (
-    <div className="container mx-auto">
-      <section className="px-20 py-10 ">
+    <div className=" mx-auto">
+      <section className="md:px-20 md:py-10 px-2 py-2
+">
         <Swiper
           modules={[Navigation, Pagination]}
           navigation

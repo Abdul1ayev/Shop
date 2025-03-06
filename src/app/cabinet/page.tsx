@@ -4,14 +4,7 @@ import Navbar from "@/components/Navbar";
 import { createClient } from "@/supabase/client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  FaUser,
-  FaGithub,
-  FaTwitter,
-  FaInstagram,
-  FaFacebook,
-  FaEdit,
-} from "react-icons/fa";
+import { FaUser, FaEdit } from "react-icons/fa";
 import { LogOut } from "lucide-react";
 
 const supabase = createClient();
@@ -29,8 +22,8 @@ type OrderInfo = {
 };
 
 const ProfilePage = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [orderInfo, setOrderInfo] = useState<OrderInfo | null>(null);
+  const [user, setUser] = useState<any>(null);
+  const [orderInfo, setOrderInfo] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [newValue, setNewValue] = useState<string>("");
@@ -38,7 +31,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const { data, error } = await supabase.auth.getSession();
+      const { data } = await supabase.auth.getSession();
       if (!data?.session?.user) {
         router.push("/login");
         return;
@@ -72,7 +65,7 @@ const ProfilePage = () => {
     fetchUser();
   }, [router]);
 
-  const handleEdit = (field: keyof User | keyof OrderInfo, value: string) => {
+  const handleEdit = (field: any, value: string) => {
     setEditingField(field);
     setNewValue(value);
   };
@@ -85,13 +78,15 @@ const ProfilePage = () => {
         .from("user")
         .update({ [editingField]: newValue })
         .eq("id", user.id);
-      setUser((prev) => (prev ? { ...prev, [editingField]: newValue } : prev));
+      setUser((prev: any) =>
+        prev ? { ...prev, [editingField]: newValue } : prev
+      );
     } else {
       await supabase
         .from("orders")
         .update({ [editingField]: newValue })
         .eq("user_id", user.id);
-      setOrderInfo((prev) =>
+      setOrderInfo((prev: any) =>
         prev ? { ...prev, [editingField]: newValue } : prev
       );
     }
