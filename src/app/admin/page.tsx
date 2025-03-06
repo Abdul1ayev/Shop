@@ -1,31 +1,14 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import logo from "../../../public/Logo.png";
 import { BiSolidDashboard } from "react-icons/bi";
 import { MdOutlineCategory } from "react-icons/md";
 import { AiFillProduct } from "react-icons/ai";
-import { FaUsers } from "react-icons/fa";
+import { FaHome, FaUsers } from "react-icons/fa";
 import { FaCartArrowDown } from "react-icons/fa6";
-
-const menuItems = [
-  { name: "Dashboard", path: "/admin/dashboard", icon: <BiSolidDashboard /> },
-  {
-    name: "Categories",
-    path: "/admin/categories",
-    icon: <MdOutlineCategory />,
-  },
-  { name: "Products", path: "/admin/products", icon: <AiFillProduct /> },
-  { name: "Users", path: "/admin/users", icon: <FaUsers /> },
-  { name: "Orders", path: "/admin/orders", icon: <FaCartArrowDown /> },
-];
-
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+import logo from "../../../public/Logo.png"
+const Admin = () => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -34,6 +17,26 @@ export default function AdminLayout({
       router.replace("/admin/dashboard");
     }
   }, [pathname, router]);
+
+  const menuItems = useMemo(
+    () => [
+      {
+        name: "Dashboard",
+        path: "/admin/dashboard",
+        icon: <BiSolidDashboard />,
+      },
+      {
+        name: "Categories",
+        path: "/admin/categories",
+        icon: <MdOutlineCategory />,
+      },
+      { name: "Products", path: "/admin/products", icon: <AiFillProduct /> },
+      { name: "Users", path: "/admin/users", icon: <FaUsers /> },
+      { name: "Orders", path: "/admin/orders", icon: <FaCartArrowDown /> },
+      { name: "Home", path: "/", icon: <FaHome /> },
+    ],
+    []
+  );
 
   return (
     <div className="h-screen w-64 bg-white shadow-lg flex flex-col p-4">
@@ -68,4 +71,6 @@ export default function AdminLayout({
       </ul>
     </div>
   );
-}
+};
+
+export default Admin;

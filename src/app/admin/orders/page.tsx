@@ -12,7 +12,7 @@ type Order = {
   phone: string;
   notes: string;
   total_price: number;
-  status: string; // "pending", "in progress", "completed"
+  status: string;
 };
 
 export default function Orders() {
@@ -22,7 +22,6 @@ export default function Orders() {
   const [draggedOrderId, setDraggedOrderId] = useState<string | null>(null);
   const supabase = createClient();
 
-  // Fetch orders from the database on component mount
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -43,23 +42,19 @@ export default function Orders() {
     setLoading(false);
   };
 
-  // Handle drag start event
   const handleDragStart = (e: React.DragEvent, orderId: string) => {
     setDraggedOrderId(orderId);
     e.dataTransfer.setData("text/plain", orderId);
   };
 
-  // Handle drag over event
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault(); // Allow drop
+    e.preventDefault();
   };
 
-  // Handle drop event
   const handleDrop = async (e: React.DragEvent, newStatus: string) => {
     e.preventDefault();
     if (!draggedOrderId) return;
 
-    // Update the order status in the database
     const { error } = await supabase
       .from("orders")
       .update({ status: newStatus })
@@ -71,7 +66,6 @@ export default function Orders() {
       return;
     }
 
-    // Update the local state to reflect the new status
     const updatedOrders = orders.map((order) =>
       order.id === draggedOrderId ? { ...order, status: newStatus } : order
     );
@@ -79,7 +73,6 @@ export default function Orders() {
     setDraggedOrderId(null);
   };
 
-  // Group orders by status
   const groupedOrders = {
     pending: orders.filter((order) => order.status === "pending"),
     inProgress: orders.filter((order) => order.status === "in progress"),
@@ -98,7 +91,6 @@ export default function Orders() {
           <p className="text-gray-500">Loading...</p>
         ) : (
           <div className="flex gap-4">
-            {/* Pending Orders Column */}
             <div
               className="flex-1 bg-white shadow-md rounded-lg p-4"
               onDragOver={handleDragOver}
@@ -154,7 +146,6 @@ export default function Orders() {
               ))}
             </div>
 
-            {/* In Progress Orders Column */}
             <div
               className="flex-1 bg-white shadow-md rounded-lg p-4"
               onDragOver={handleDragOver}
@@ -210,7 +201,6 @@ export default function Orders() {
               ))}
             </div>
 
-            {/* Completed Orders Column */}
             <div
               className="flex-1 bg-white shadow-md rounded-lg p-4"
               onDragOver={handleDragOver}

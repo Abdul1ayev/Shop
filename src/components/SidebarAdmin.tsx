@@ -1,29 +1,43 @@
 "use client";
+import { useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
+import logo from "../../public/Logo.png";
 import { BiSolidDashboard } from "react-icons/bi";
 import { MdOutlineCategory } from "react-icons/md";
 import { AiFillProduct } from "react-icons/ai";
 import { FaHome, FaUsers } from "react-icons/fa";
 import { FaCartArrowDown } from "react-icons/fa6";
-import logo from "../../public/Logo.png";
 
-const menuItems = [
-  { name: "Dashboard", path: "/admin/dashboard", icon: <BiSolidDashboard /> },
-  {
-    name: "Categories",
-    path: "/admin/categories",
-    icon: <MdOutlineCategory />,
-  },
-  { name: "Products", path: "/admin/products", icon: <AiFillProduct /> },
-  { name: "Users", path: "/admin/users", icon: <FaUsers /> },
-  { name: "Orders", path: "/admin/orders", icon: <FaCartArrowDown /> },
-  { name: "Home", path: "/", icon: <FaHome /> },
-];
-
-export default function SidebarAdmin() {
+const SidebarAdmin = () => {
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (pathname === "/admin") {
+      router.replace("/admin/dashboard");
+    }
+  }, [pathname, router]);
+
+  const menuItems = useMemo(
+    () => [
+      {
+        name: "Dashboard",
+        path: "/admin/dashboard",
+        icon: <BiSolidDashboard />,
+      },
+      {
+        name: "Categories",
+        path: "/admin/categories",
+        icon: <MdOutlineCategory />,
+      },
+      { name: "Products", path: "/admin/products", icon: <AiFillProduct /> },
+      { name: "Users", path: "/admin/users", icon: <FaUsers /> },
+      { name: "Orders", path: "/admin/orders", icon: <FaCartArrowDown /> },
+      { name: "Home", path: "/", icon: <FaHome /> },
+    ],
+    []
+  );
 
   return (
     <div className="h-screen w-64 bg-white shadow-lg flex flex-col p-4">
@@ -58,4 +72,6 @@ export default function SidebarAdmin() {
       </ul>
     </div>
   );
-}
+};
+
+export default SidebarAdmin;

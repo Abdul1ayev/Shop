@@ -119,6 +119,7 @@ export default function Cart() {
             Please register or log in!
           </p>
         </div>
+        <div className="flex-grow"></div>
         <Footer />
       </div>
     );
@@ -135,7 +136,9 @@ export default function Cart() {
         {loading ? (
           <p className="text-center text-gray-500">Loading...</p>
         ) : cartItems.length === 0 ? (
-          <p className="text-center text-gray-500 text-lg mb-10">Cart is empty</p>
+          <p className="text-center text-gray-500 text-lg mb-10">
+            Cart is empty
+          </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse rounded-lg shadow-xl border border-green-700 overflow-hidden">
@@ -144,7 +147,9 @@ export default function Cart() {
                   <th className="border border-green-700 px-2 py-3">Image</th>
                   <th className="border border-green-700 px-2 py-3">Product</th>
                   <th className="border border-green-700 px-2 py-3">Price</th>
-                  <th className="border border-green-700 px-2 py-3">Quantity</th>
+                  <th className="border border-green-700 px-2 py-3">
+                    Quantity
+                  </th>
                   <th className="border border-green-700 px-2 py-3">Total</th>
                   <th className="border border-green-700 px-2 py-3">Action</th>
                 </tr>
@@ -202,23 +207,26 @@ export default function Cart() {
               </tbody>
             </table>
             <div className="total">
-            {cartItems.length > 0 && (
-          <div className="text-center mt-8">
-            <p className="text-2xl font-bold text-gray-900">
-              Total price:{" "}
-              <span className="text-green-600">${totalPrice.toFixed(2)}</span>
-            </p>
-            <button
-              onClick={() => router.push("/checkout")}
-              className="border-green-700 block mx-auto border-2 text-green-700 hover:text-green-500 hover:border-green-500 transition-all py-2 px-4 rounded mt-4"
-            >
-              Buy Now
-            </button>
-          </div>
-        )}
+              {cartItems.length > 0 && (
+                <div className="text-center mt-8">
+                  <p className="text-2xl font-bold text-gray-900">
+                    Total price:{" "}
+                    <span className="text-green-600">
+                      ${totalPrice.toFixed(2)}
+                    </span>
+                  </p>
+                  <button
+                    onClick={() => router.push("/checkout")}
+                    className="border-green-700 block mx-auto border-2 text-green-700 hover:text-green-500 hover:border-green-500 transition-all py-2 px-4 rounded mt-4"
+                  >
+                    Buy Now
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
+        <div className="flex-grow"></div>
       </div>
       <Footer />
     </div>

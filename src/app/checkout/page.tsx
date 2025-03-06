@@ -129,7 +129,7 @@ export default function Checkout() {
 
     await supabase.from("cart").delete().eq("user_id", userId);
 
-    toast("Buyurtma yaratildi.");
+    toast.success("Buyurtma yaratildi.");
     setCartItems([]);
     setForm({ firstName: "", email: "", address: "", phone: "", notes: "" });
   };
