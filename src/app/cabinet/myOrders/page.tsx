@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaTrash } from "react-icons/fa";
 import { IoMdArrowBack } from "react-icons/io";
+import Image from "next/image";
 
 const supabase = createClient();
 
@@ -25,6 +26,11 @@ type OrderItem = {
   quantity: number;
   product_image: string;
   price: number;
+};
+
+type Product = {
+  name: string;
+  images: string[];
 };
 
 const MyOrders = () => {
@@ -57,7 +63,7 @@ const MyOrders = () => {
         .order("created_at", { ascending: false });
 
       if (ordersError) {
-        console.error(error);
+        console.error(ordersError);
       } else {
         setOrders(ordersData || []);
         ordersData.forEach((order) => fetchOrderItems(order.id));
@@ -86,20 +92,19 @@ const MyOrders = () => {
           if (productError) {
             console.error(
               `Error fetching product ${item.product_id}:`,
-              productError.message || productError
+              productError.message
             );
           }
+
+          const product: Product | null = productData;
 
           return {
             id: item.id,
             product_id: item.product_id,
-            product_name: productData?.name || "Unknown Product",
+            product_name: product?.name || "Unknown Product",
             quantity: item.quantity,
             price: item.total_price,
-            product_image:
-              productData?.images?.length > 0
-                ? productData.images[0]
-                : "/placeholder.png",
+            product_image: product?.images[0] || "",
           };
         })
       );
@@ -138,7 +143,7 @@ const MyOrders = () => {
     if (itemsError) {
       console.error(
         `Error deleting order items for order ${orderId}:`,
-        itemsError.message || itemsError
+        itemsError.message
       );
       return;
     }
@@ -149,10 +154,7 @@ const MyOrders = () => {
       .eq("id", orderId);
 
     if (orderError) {
-      console.error(
-        `Error deleting order ${orderId}:`,
-        orderError.message || orderError
-      );
+      console.error(`Error deleting order ${orderId}:`, orderError.message);
       return;
     }
 
@@ -222,7 +224,7 @@ const MyOrders = () => {
                       className="flex items-center bg-white p-4 rounded-lg shadow-md border"
                     >
                       <div className="w-16 h-16 flex-shrink-0 overflow-hidden rounded-lg border">
-                        <img
+                        <Image
                           src={item.product_image}
                           alt={item.product_name || "Product"}
                           className="w-full h-full object-cover"
