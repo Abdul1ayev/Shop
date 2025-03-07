@@ -225,6 +225,8 @@ const MyOrders = () => {
                     >
                       <div className="w-16 h-16 flex-shrink-0 overflow-hidden rounded-lg border">
                         <Image
+                        width={100}
+                        height={100}
                           src={item.product_image}
                           alt={item.product_name || "Product"}
                           className="w-full h-full object-cover"

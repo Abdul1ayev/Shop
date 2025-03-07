@@ -133,6 +133,8 @@ export default function Product_Detail({
         <div className="md:w-1/2 flex flex-col items-center">
           {product ? (
             <Image
+              width={100}
+              height={100}
               src={selectedImage || product.images[0]}
               alt={product.name}
               className="w-full max-w-lg h-96 object-cover rounded-lg shadow-md border border-gray-300"
@@ -146,6 +148,8 @@ export default function Product_Detail({
               ? product.images.map((img, index) => (
                   <Image
                     key={index}
+                    width={64}
+                    height={64}
                     src={img}
                     alt={`Thumbnail ${index + 1}`}
                     onClick={() => setSelectedImage(img)}
