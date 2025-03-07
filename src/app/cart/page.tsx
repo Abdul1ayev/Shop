@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { FaTrash, FaPlus, FaMinus } from "react-icons/fa";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 type CartItem = {
   id: string;
@@ -140,72 +141,122 @@ export default function Cart() {
             Cart is empty
           </p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse rounded-lg shadow-xl border border-green-700 overflow-hidden">
-              <thead>
-                <tr className="bg-green-600 text-white text-center">
-                  <th className="border border-green-700 px-2 py-3">Image</th>
-                  <th className="border border-green-700 px-2 py-3">Product</th>
-                  <th className="border border-green-700 px-2 py-3">Price</th>
-                  <th className="border border-green-700 px-2 py-3">
-                    Quantity
-                  </th>
-                  <th className="border border-green-700 px-2 py-3">Total</th>
-                  <th className="border border-green-700 px-2 py-3">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cartItems.map((item) => (
-                  <tr key={item.id} className="bg-white hover:bg-green-100">
-                    <td className="border border-green-700 p-2 text-center">
-                      <img
-                        src={item.product.images[0]}
-                        alt={item.product.name}
-                        className="w-20 h-20 object-cover rounded-lg mx-auto"
-                      />
-                    </td>
-                    <td className="border border-green-700 p-4 py-1 text-center">
-                      {item.product.name}
-                    </td>
-                    <td className="border border-green-700 p-4 py-1 text-center">
-                      ${item.product.price}
-                    </td>
-                    <td className="border border-green-700 p-4 py-1 text-center">
-                      <button
-                        className="p-1 bg-green-200 rounded-lg hover:bg-green-300 transition-all"
-                        onClick={() =>
-                          handleUpdateQuantity(item.id, item.quantity - 1)
-                        }
-                      >
-                        <FaMinus className="text-green-800" />
-                      </button>
-                      <span className="mx-2 text-lg font-semibold">
-                        {item.quantity}
-                      </span>
-                      <button
-                        className="p-1 bg-green-200 rounded-lg hover:bg-green-300 transition-all"
-                        onClick={() =>
-                          handleUpdateQuantity(item.id, item.quantity + 1)
-                        }
-                      >
-                        <FaPlus className="text-green-800" />
-                      </button>
-                    </td>
-                    <td className="border border-green-700 p-4 py-1 text-center">
-                      ${item.total_price.toFixed(2)}
-                    </td>
-                    <td className="border border-green-700 p-4 py-1 text-center">
-                      <button
-                        className="text-red-700 hover:text-red-500 transition-all"
-                        onClick={() => handleRemoveItem(item.id)}
-                      >
-                        <FaTrash />
-                      </button>
-                    </td>
+          <div className="overflow-x-auto ">
+            <div className="hidden md:block">
+              <table className="w-full border-collapse rounded-lg shadow-xl border border-green-700 overflow-hidden">
+                <thead>
+                  <tr className="bg-green-600 text-white text-center">
+                    <th className="border border-green-700 px-2 py-3">Image</th>
+                    <th className="border border-green-700 px-2 py-3">
+                      Product
+                    </th>
+                    <th className="border border-green-700 px-2 py-3">Price</th>
+                    <th className="border border-green-700 px-2 py-3">
+                      Quantity
+                    </th>
+                    <th className="border border-green-700 px-2 py-3">Total</th>
+                    <th className="border border-green-700 px-2 py-3">
+                      Action
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {cartItems.map((item) => (
+                    <tr key={item.id} className="bg-white hover:bg-green-100">
+                      <td className="border border-green-700 p-2 text-center">
+                        <Image
+                          src={item.product.images[0]}
+                          alt={item.product.name}
+                          width={80}
+                          height={80}
+                          className="w-20 h-20 object-cover rounded-lg mx-auto"
+                        />
+                      </td>
+                      <td className="border border-green-700 p-4 py-1 text-center">
+                        {item.product.name}
+                      </td>
+                      <td className="border border-green-700 p-4 py-1 text-center">
+                        ${item.product.price}
+                      </td>
+                      <td className="border border-green-700 p-4 py-1 text-center">
+                        <button
+                          className="p-1 bg-green-200 rounded-lg hover:bg-green-300 transition-all"
+                          onClick={() =>
+                            handleUpdateQuantity(item.id, item.quantity - 1)
+                          }
+                        >
+                          <FaMinus className="text-green-800" />
+                        </button>
+                        <span className="mx-2 text-lg font-semibold">
+                          {item.quantity}
+                        </span>
+                        <button
+                          className="p-1 bg-green-200 rounded-lg hover:bg-green-300 transition-all"
+                          onClick={() =>
+                            handleUpdateQuantity(item.id, item.quantity + 1)
+                          }
+                        >
+                          <FaPlus className="text-green-800" />
+                        </button>
+                      </td>
+                      <td className="border border-green-700 p-4 py-1 text-center">
+                        ${item.total_price.toFixed(2)}
+                      </td>
+                      <td className="border border-green-700 p-4 py-1 text-center">
+                        <button
+                          className="text-red-700 hover:text-red-500 transition-all"
+                          onClick={() => handleRemoveItem(item.id)}
+                        >
+                          <FaTrash />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="md:hidden">
+              {cartItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="border text-center rounded-lg p-4 shadow-md mb-4"
+                >
+                  {item.product.images && item.product.images.length > 0 && (
+                    <Image
+                      src={item.product.images[0]}
+                      alt={item.product.name}
+                      width={160}
+                      height={160}
+                      className="w-full h-40 object-cover rounded-lg"
+                    />
+                  )}
+
+                  <h2 className="text-lg font-bold">{item.product.name}</h2>
+                  <p className="text-green-600">${item.product.price}</p>
+                  <div className="flex items-center justify-center mt-2">
+                    <button
+                      className="p-1 bg-green-200 rounded-lg hover:bg-green-300 transition-all"
+                      onClick={() =>
+                        handleUpdateQuantity(item.id, item.quantity - 1)
+                      }
+                    >
+                      <FaMinus className="text-green-800" />
+                    </button>
+                    <span className="mx-2 text-lg font-semibold">
+                      {item.quantity}
+                    </span>
+                    <button
+                      className="p-1 bg-green-200 rounded-lg hover:bg-green-300 transition-all"
+                      onClick={() =>
+                        handleUpdateQuantity(item.id, item.quantity + 1)
+                      }
+                    >
+                      <FaPlus className="text-green-800" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
             <div className="total">
               {cartItems.length > 0 && (
                 <div className="text-center mt-8">
