@@ -1,10 +1,11 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { createClient } from "@/supabase/client";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"
+import "react-toastify/dist/ReactToastify.css";
+import Image from "next/image";
 
 type CartItem = {
   id: string;
@@ -30,14 +31,8 @@ export default function Checkout() {
 
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const supabase = createClient();
-
-  useEffect(() => {
-    fetchCart();
-  }, []);
-
-  const fetchCart = async () => {
+  const fetchCart = useCallback(async () => {
     setLoading(true);
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
@@ -49,20 +44,41 @@ export default function Checkout() {
 
     const userId = userData.user.id;
 
-    const { data, error }: any = await supabase
+    const { data, error } = await supabase
       .from("cart")
       .select(
-        "id, product_id, quantity, total_price, product(name, price, images)"
+        `
+        id, 
+        product_id, 
+        user_id, 
+        quantity, 
+        total_price, 
+        product:product_id (name, price, images)
+      `
       )
       .eq("user_id", userId);
 
-    if (error) {
+    if (error || !data) {
       toast.error("Savatcha ma'lumotlarini olishda xatolik yuz berdi.");
     } else {
-      setCartItems(data);
+      const formattedData: CartItem[] = data.map((item) => ({
+        id: item.id,
+        product_id: item.product_id,
+        user_id: item.user_id,
+        quantity: item.quantity,
+        total_price: item.total_price,
+        product: Array.isArray(item.product) ? item.product[0] : item.product,
+      }));
+
+      setCartItems(formattedData);
     }
+
     setLoading(false);
-  };
+  }, [supabase]);
+
+  useEffect(() => {
+    fetchCart();
+  }, [fetchCart]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,7 +92,7 @@ export default function Checkout() {
     const userId = userData.user.id;
 
     if (cartItems.length === 0) {
-      setError("Savatcha bo'sh.");
+      toast.error("Savatcha bo'sh!");
       return;
     }
 
@@ -104,7 +120,6 @@ export default function Checkout() {
 
     if (error || !data) {
       toast.error("Buyurtma yaratishda xatolik yuz berdi.");
-
       return;
     }
 
@@ -136,7 +151,6 @@ export default function Checkout() {
 
   return (
     <div className="w-full min-h-screen flex flex-col justify-between bg-gray-100">
-      {" "}
       <ToastContainer position="top-right" autoClose={3000} />
       <Navbar />
       <div className="container mx-auto p-6 flex flex-col md:flex-row gap-6">
@@ -214,9 +228,11 @@ export default function Checkout() {
                   key={item.id}
                   className="border rounded-lg p-3 flex items-center gap-4"
                 >
-                  <img
+                  <Image
                     src={item.product.images[0]}
                     alt={item.product.name}
+                    width={64}
+                    height={64}
                     className="w-16 h-16 object-cover rounded"
                   />
                   <div className="flex-1">

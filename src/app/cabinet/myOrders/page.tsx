@@ -77,7 +77,7 @@ const MyOrders = () => {
 
       const itemsWithNames = await Promise.all(
         data.map(async (item) => {
-          const { data: productData, error: productError }: any = await supabase
+          const { data: productData, error: productError } = await supabase
             .from("product")
             .select("name, images")
             .eq("id", item.product_id)

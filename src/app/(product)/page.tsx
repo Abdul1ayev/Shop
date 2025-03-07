@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/supabase/client";
 import { useRouter } from "next/navigation";
 import Skeleton from "react-loading-skeleton";
@@ -32,42 +32,45 @@ const Product = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [onlyActive, setOnlyActive] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      await fetchProducts();
-      await fetchCategories();
-      setLoading(false);
-    };
-    fetchData();
-  }, [supabase]);
-
-  const fetchProducts = async () => {
+  // ✅ `fetchProducts` ni `useCallback` bilan o'rash
+  const fetchProducts = useCallback(async () => {
     const { data, error } = await supabase
       .from("product")
       .select("*")
       .order("id", { ascending: true });
 
     if (error) {
-      console.log(error);
-    } else {
-      setProduct(data);
+      console.error(error);
+      return [];
     }
-    setLoading(false);
-  };
+    return data as Product[];
+  }, [supabase]);
 
-  const fetchCategories = async () => {
+  // ✅ `fetchCategories` ni `useCallback` bilan o'rash
+  const fetchCategories = useCallback(async () => {
     const { data, error } = await supabase
       .from("category")
       .select("*")
       .order("id", { ascending: true });
 
     if (error) {
-      console.log(error);
-    } else {
-      setCategory(data);
+      console.error(error);
+      return [];
     }
-  };
+    return data as Category[];
+  }, [supabase]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const products = await fetchProducts();
+      const categories = await fetchCategories();
+      setProduct(products);
+      setCategory(categories);
+      setLoading(false);
+    };
+    fetchData();
+  }, [fetchProducts, fetchCategories]); // ✅ Endi to'g'ri ishlaydi
 
   const filteredProducts = product.filter((p) => {
     return (
@@ -167,6 +170,8 @@ const Product = () => {
                 <Image
                   src={product.images[0]}
                   alt={product.name}
+                  width={300}
+                  height={200}
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-4 flex flex-col flex-1">

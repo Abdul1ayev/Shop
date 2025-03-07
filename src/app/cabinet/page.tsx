@@ -1,4 +1,5 @@
 "use client";
+
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { createClient } from "@/supabase/client";
@@ -6,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaUser, FaEdit } from "react-icons/fa";
 import { LogOut } from "lucide-react";
+import Image from "next/image";
 
 const supabase = createClient();
 
@@ -22,9 +24,9 @@ type OrderInfo = {
 };
 
 const ProfilePage = () => {
-  const [user, setUser] = useState<any>(null);
-  const [orderInfo, setOrderInfo] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [orderInfo, setOrderInfo] = useState<OrderInfo | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [newValue, setNewValue] = useState<string>("");
   const router = useRouter();
@@ -65,7 +67,7 @@ const ProfilePage = () => {
     fetchUser();
   }, [router]);
 
-  const handleEdit = (field: any, value: string) => {
+  const handleEdit = (field: keyof User | keyof OrderInfo, value: string) => {
     setEditingField(field);
     setNewValue(value);
   };
@@ -78,15 +80,13 @@ const ProfilePage = () => {
         .from("user")
         .update({ [editingField]: newValue })
         .eq("id", user.id);
-      setUser((prev: any) =>
-        prev ? { ...prev, [editingField]: newValue } : prev
-      );
+      setUser((prev) => (prev ? { ...prev, [editingField]: newValue } : prev));
     } else {
       await supabase
         .from("orders")
         .update({ [editingField]: newValue })
         .eq("user_id", user.id);
-      setOrderInfo((prev: any) =>
+      setOrderInfo((prev) =>
         prev ? { ...prev, [editingField]: newValue } : prev
       );
     }
@@ -103,9 +103,11 @@ const ProfilePage = () => {
             {loading ? (
               <div className="animate-spin rounded-full h-24 w-24 border-t-4 border-white"></div>
             ) : user?.avatar_url ? (
-              <img
+              <Image
                 src={user.avatar_url}
-                className="rounded-full w-24 h-24 border-4 border-white"
+                width={96}
+                height={96}
+                className="rounded-full border-4 border-white"
                 alt="Avatar"
               />
             ) : (
@@ -117,7 +119,12 @@ const ProfilePage = () => {
           <div className="p-6 w-full md:w-2/3">
             <h2 className="text-xl font-semibold mb-4">User Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {["email", "phone", "address"].map((field) => (
+              {(
+                ["email", "phone", "address"] as (
+                  | keyof User
+                  | keyof OrderInfo
+                )[]
+              ).map((field) => (
                 <div
                   key={field}
                   className={field === "address" ? "col-span-2" : ""}
@@ -128,8 +135,11 @@ const ProfilePage = () => {
                       className="cursor-pointer text-blue-600 hover:text-blue-400"
                       onClick={() =>
                         handleEdit(
-                          field as any,
-                          user?.[field] || orderInfo?.[field] || ""
+                          field,
+                          (user && user[field as keyof User]) ||
+                            (orderInfo &&
+                              orderInfo[field as keyof OrderInfo]) ||
+                            ""
                         )
                       }
                     />
@@ -151,7 +161,9 @@ const ProfilePage = () => {
                     </div>
                   ) : (
                     <p>
-                      {user?.[field] || orderInfo?.[field] || "Not available"}
+                      {(user && user[field as keyof User]) ||
+                        (orderInfo && orderInfo[field as keyof OrderInfo]) ||
+                        "Not available"}
                     </p>
                   )}
                 </div>

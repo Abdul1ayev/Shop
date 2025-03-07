@@ -132,7 +132,7 @@ export default function Product_Detail({
       <div className="container mt-5 mx-auto px-4 py-10 flex flex-col md:flex-row gap-10 border border-gray-300 rounded-lg shadow-md">
         <div className="md:w-1/2 flex flex-col items-center">
           {product ? (
-            <img
+            <Image
               src={selectedImage || product.images[0]}
               alt={product.name}
               className="w-full max-w-lg h-96 object-cover rounded-lg shadow-md border border-gray-300"

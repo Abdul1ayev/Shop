@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/supabase/client";
 import SidebarAdmin from "@/components/SidebarAdmin";
 import { toast, ToastContainer } from "react-toastify";
@@ -17,17 +17,9 @@ export default function CategoriesPage() {
   const [name, setName] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
-  const [sortBy, setSortBy] = useState<"name" | "status">("name");
-  const [filterStatus, setFilterStatus] = useState<
-    "all" | "active" | "inactive"
-  >("all");
   const supabase = createClient();
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  async function fetchCategories() {
+  const fetchCategories = useCallback(async () => {
     const { data, error } = await supabase.from("category").select("*");
     if (error) {
       console.error("❌ Error fetching categories:", error);
@@ -35,7 +27,11 @@ export default function CategoriesPage() {
     } else {
       setCategories(data || []);
     }
-  }
+  }, [supabase]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   async function addOrUpdateCategory(e: React.FormEvent) {
     e.preventDefault();
@@ -101,24 +97,6 @@ export default function CategoriesPage() {
     }
   }
 
-  const sortedAndFilteredCategories = categories
-    .filter((cat) =>
-      filterStatus === "all"
-        ? true
-        : filterStatus === "active"
-        ? cat.active
-        : !cat.active
-    )
-    .sort((a, b) =>
-      sortBy === "name"
-        ? a.name.localeCompare(b.name)
-        : a.active === b.active
-        ? 0
-        : a.active
-        ? -1
-        : 1
-    );
-
   return (
     <div className="grid grid-cols-[250px_1fr] min-h-screen bg-gray-100">
       <SidebarAdmin />
@@ -162,7 +140,7 @@ export default function CategoriesPage() {
               </tr>
             </thead>
             <tbody>
-              {sortedAndFilteredCategories.map((cat, index) => (
+              {categories.map((cat, index) => (
                 <tr key={cat.id} className="border hover:bg-gray-50 transition">
                   <td className="border p-2">{index + 1}</td>
                   <td className="border p-2">{cat.name}</td>
