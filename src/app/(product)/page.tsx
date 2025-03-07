@@ -4,6 +4,7 @@ import { createClient } from "@/supabase/client";
 import { useRouter } from "next/navigation";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import Image from "next/image";
 
 type Category = {
   id: string;
@@ -163,7 +164,7 @@ const Product = () => {
                 className="bg-white rounded-lg border shadow-md overflow-hidden flex flex-col h-full"
                 key={product.id}
               >
-                <img
+                <Image
                   src={product.images[0]}
                   alt={product.name}
                   className="w-full h-48 object-cover"

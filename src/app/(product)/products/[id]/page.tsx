@@ -2,16 +2,12 @@
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { createClient } from "@/supabase/client";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState, use } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { toast, ToastContainer } from "react-toastify";
-
-type Category = {
-  id: string;
-  name: string;
-};
 
 type Product = {
   id: string;
@@ -148,7 +144,7 @@ export default function Product_Detail({
           <div className="flex gap-2 mt-4">
             {product
               ? product.images.map((img, index) => (
-                  <img
+                  <Image
                     key={index}
                     src={img}
                     alt={`Thumbnail ${index + 1}`}
