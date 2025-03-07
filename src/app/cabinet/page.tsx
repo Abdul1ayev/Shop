@@ -104,7 +104,7 @@ const ProfilePage = () => {
               <div className="animate-spin rounded-full h-24 w-24 border-t-4 border-white"></div>
             ) : user?.avatar_url ? (
               <Image
-                src={user.avatar_url}
+                src={"https://cdn1.vectorstock.com/i/1000x1000/51/90/student-avatar-user-profile-icon-vector-47025190.jpg"}
                 width={96}
                 height={96}
                 className="rounded-full border-4 border-white"
