@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/supabase/client";
 import { Menu, X, ShoppingCart, LogOut, User } from "lucide-react";
+import Image from "next/image";
 
 export default function Navbar() {
   const [cartCount, setCartCount] = useState(0);
@@ -137,7 +138,9 @@ export default function Navbar() {
           <li className="relative">
             {user ? (
               <div className="relative mt-4">
-                <img
+                <Image
+                  width={48}
+                  height={48}
                   src="https://static.vecteezy.com/system/resources/previews/016/009/835/non_2x/the-human-icon-and-logo-vector.jpg"
                   alt="User"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
