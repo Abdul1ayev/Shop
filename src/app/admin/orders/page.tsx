@@ -24,9 +24,9 @@ export default function Orders() {
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [fetchOrders]);
 
-  const fetchOrders = useCallback(async () => {
+  const fetchOrders =useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("orders")
@@ -40,11 +40,7 @@ export default function Orders() {
       setOrders(data);
     }
     setLoading(false);
-  }, [supabase]);
-
-  useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
+  }) 
 
   const handleDragStart = (e: React.DragEvent, orderId: string) => {
     setDraggedOrderId(orderId);
