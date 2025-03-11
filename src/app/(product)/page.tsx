@@ -33,8 +33,7 @@ const Product = () => {
   const [onlyActive, setOnlyActive] = useState(false);
 
   const fetchProducts = useCallback(async () => {
-    const supabaseClient = createClient();
-    const { data, error } = await supabaseClient
+    const { data, error } = await supabase
       .from("product")
       .select("*")
       .order("id", { ascending: true });
@@ -44,7 +43,7 @@ const Product = () => {
       return [];
     }
     return data as Product[];
-  }, []);
+  }, [supabase]);
 
   const fetchCategories = useCallback(async () => {
     const { data, error } = await supabase
@@ -69,7 +68,7 @@ const Product = () => {
       setLoading(false);
     };
     fetchData();
-  }, [fetchProducts, fetchCategories]); // ✅ Endi to'g'ri ishlaydi
+  }, [fetchProducts, fetchCategories]);
 
   const filteredProducts = product.filter((p) => {
     return (

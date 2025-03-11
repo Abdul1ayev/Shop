@@ -19,13 +19,14 @@ type Product = {
   active: boolean;
 };
 
-const supabase = createClient();
 
 export default function Product_Detail({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+const supabase = createClient();
+
   const { id } = use(params);
   const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
