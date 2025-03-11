@@ -5,10 +5,15 @@ import { usePathname } from "next/navigation";
 import { createClient } from "@/supabase/client";
 import { Menu, X, ShoppingCart, LogOut, User } from "lucide-react";
 import Image from "next/image";
+interface UserType {
+  id: string;
+  role: string;
+}
 
 export default function Navbar() {
   const [cartCount, setCartCount] = useState(0);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<UserType | null>(null);
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const supabase = createClient();
@@ -32,43 +37,45 @@ export default function Navbar() {
         }
       }
     };
+
     checkUser();
-  }, []);
+  }, [supabase]); 
 
   useEffect(() => {
-    if (!user) return;
+  if (!user) return;
 
-    const fetchCartCount = async () => {
-      const { data, error } = await supabase
-        .from("cart")
-        .select("id")
-        .eq("user_id", user.id);
+  const fetchCartCount = async () => {
+    const { data, error } = await supabase
+      .from("cart")
+      .select("id")
+      .eq("user_id", user.id);
 
-      if (!error && data) {
-        setCartCount(data.length);
-      }
-    };
+    if (!error && data) {
+      setCartCount(data.length);
+    }
+  };
 
-    fetchCartCount();
+  fetchCartCount();
 
-    const channel = supabase
-      .channel("cart-updates")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "cart",
-          filter: `user_id=eq.${user.id}`,
-        },
-        fetchCartCount
-      )
-      .subscribe();
+  const channel = supabase
+    .channel("cart-updates")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "cart",
+        filter: `user_id=eq.${user.id}`,
+      },
+      fetchCartCount
+    )
+    .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user]);
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, [user, supabase]); // ✅ Supabase dependency sifatida qo'shildi
+
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -141,7 +148,7 @@ export default function Navbar() {
                 <Image
                   width={48}
                   height={48}
-                  src="https://static.vecteezy.com/system/resources/previews/016/009/835/non_2x/the-human-icon-and-logo-vector.jpg"
+                  src="https:
                   alt="User"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="w-12 h-12 rounded-full border-2 border-gray-500 transition-all hover:border-gray-800 p-1 cursor-pointer"
