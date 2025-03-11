@@ -1,39 +1,45 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/supabase/client";
 import { Menu, X, ShoppingCart, LogOut, User } from "lucide-react";
 import Image from "next/image";
 
+type User = {
+  id: string;
+  role: string;
+};
+
 export default function Navbar() {
   const [cartCount, setCartCount] = useState(0);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const supabase = createClient();
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const session = sessionData?.session;
+  const checkUser = useCallback(async () => {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const session = sessionData?.session;
 
-      if (session?.user) {
-        const { data: userData } = await supabase
-          .from("user")
-          .select("role")
-          .eq("id", session.user.id)
-          .single();
+    if (session?.user) {
+      const { data: userData } = await supabase
+        .from("user")
+        .select("role")
+        .eq("id", session.user.id)
+        .single();
 
-        if (userData) {
-          setUser({ id: session.user.id, role: userData.role });
-        }
+      if (userData) {
+        setUser({ id: session.user.id, role: userData.role });
       }
-    };
+    }
+  }, [supabase]);
+
+  useEffect(() => {
     checkUser();
-  }, []);
+  }, [checkUser]);
 
   useEffect(() => {
     if (!user) return;
@@ -68,7 +74,7 @@ export default function Navbar() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user]);
+  }, [user, supabase]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -76,6 +82,17 @@ export default function Navbar() {
     setCartCount(0);
     router.push("/");
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownOpen) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [dropdownOpen]);
 
   return (
     <>
@@ -137,7 +154,7 @@ export default function Navbar() {
           </li>
           <li className="relative">
             {user ? (
-              <div className="relative mt-4">
+              <div className="relative mt-4 dropdown-container">
                 <Image
                   width={48}
                   height={48}
