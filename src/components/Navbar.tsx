@@ -6,9 +6,14 @@ import { createClient } from "@/supabase/client";
 import { Menu, X, ShoppingCart, LogOut, User } from "lucide-react";
 import Image from "next/image";
 
+interface User {
+  id: string;
+  role: string;
+}
+
 export default function Navbar() {
   const [cartCount, setCartCount] = useState(0);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const supabase = createClient();
@@ -33,7 +38,7 @@ export default function Navbar() {
       }
     };
     checkUser();
-  }, []);
+  }, [supabase]); // Added supabase as a dependency
 
   useEffect(() => {
     if (!user) return;
@@ -68,7 +73,7 @@ export default function Navbar() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user]);
+  }, [user, supabase]); // Added supabase as a dependency
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
