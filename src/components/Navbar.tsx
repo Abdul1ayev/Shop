@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/supabase/client";
@@ -19,6 +19,7 @@ export default function Navbar() {
   const supabase = createClient();
   const router = useRouter();
   const pathname = usePathname();
+  const supabaseRef = useMemo(() => supabase, []);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -37,45 +38,43 @@ export default function Navbar() {
         }
       }
     };
-
     checkUser();
-  }, [supabase]); 
+  }, [supabaseRef]);
 
   useEffect(() => {
-  if (!user) return;
+    if (!user) return;
 
-  const fetchCartCount = async () => {
-    const { data, error } = await supabase
-      .from("cart")
-      .select("id")
-      .eq("user_id", user.id);
+    const fetchCartCount = async () => {
+      const { data, error } = await supabase
+        .from("cart")
+        .select("id")
+        .eq("user_id", user.id);
 
-    if (!error && data) {
-      setCartCount(data.length);
-    }
-  };
+      if (!error && data) {
+        setCartCount(data.length);
+      }
+    };
 
-  fetchCartCount();
+    fetchCartCount();
 
-  const channel = supabase
-    .channel("cart-updates")
-    .on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "cart",
-        filter: `user_id=eq.${user.id}`,
-      },
-      fetchCartCount
-    )
-    .subscribe();
+    const channel = supabase
+      .channel("cart-updates")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "cart",
+          filter: `user_id=eq.${user.id}`,
+        },
+        fetchCartCount
+      )
+      .subscribe();
 
-  return () => {
-    supabase.removeChannel(channel);
-  };
-}, [user, supabase]); // ✅ Supabase dependency sifatida qo'shildi
-
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -148,7 +147,7 @@ export default function Navbar() {
                 <Image
                   width={48}
                   height={48}
-                  src="https:
+                  src="https://static.vecteezy.com/system/resources/previews/016/009/835/non_2x/the-human-icon-and-logo-vector.jpg"
                   alt="User"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="w-12 h-12 rounded-full border-2 border-gray-500 transition-all hover:border-gray-800 p-1 cursor-pointer"
