@@ -28,7 +28,6 @@ export default function Products() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [formData, setFormData] = useState<Product | null>(null);
@@ -152,6 +151,7 @@ export default function Products() {
     };
     reader.readAsDataURL(files[0]);
   };
+
   const handleDeleteImage = (index: number, isEditModal: boolean) => {
     if (isEditModal && formData) {
       const updatedImages = formData.images.filter((_, i) => i !== index);
@@ -219,7 +219,6 @@ export default function Products() {
                       <div className="flex justify-center gap-2">
                         <button
                           onClick={() => {
-                            setSelectedProduct(product);
                             setFormData(product);
                             setModalVisible(true);
                           }}
