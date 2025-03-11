@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/supabase/client";
 import SidebarAdmin from "@/components/SidebarAdmin";
 
@@ -26,7 +26,7 @@ export default function Orders() {
     fetchOrders();
   }, []);
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("orders")
@@ -40,7 +40,11 @@ export default function Orders() {
       setOrders(data);
     }
     setLoading(false);
-  };
+  }, [supabase]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   const handleDragStart = (e: React.DragEvent, orderId: string) => {
     setDraggedOrderId(orderId);

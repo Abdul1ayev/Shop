@@ -14,7 +14,13 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import bcrypt from "bcryptjs";
 import { useRouter } from "next/navigation";
-
+interface InputFieldProps {
+  icon: React.ComponentType<{ className?: string }>;
+  type: string;
+  placeholder: string;
+  value: string;
+  setValue: React.Dispatch<React.SetStateAction<string>>;
+}
 export default function Login() {
   const router = useRouter();
   const supabase = createClient();
@@ -29,7 +35,7 @@ export default function Login() {
     setUsername("");
   };
 
-  const handleRegister = async (e:React.FormEvent<HTMLFormElement>) => {
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const hashedPassword = await bcrypt.hash(password, 10);
     const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -55,7 +61,7 @@ export default function Login() {
     }
   };
 
-  const handleLogin = async (e:React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { data: userData, error: userError } = await supabase
       .from("user")
@@ -144,7 +150,13 @@ export default function Login() {
   );
 }
 
-function InputField({ icon: Icon, type, placeholder, value, setValue }:InputFieldProps) {
+function InputField({
+  icon: Icon,
+  type,
+  placeholder,
+  value,
+  setValue,
+}: InputFieldProps) {
   return (
     <div className="flex items-center bg-gray-100 rounded-lg p-3 mt-4">
       <Icon className="w-5 h-5 text-gray-500 mr-2" />
