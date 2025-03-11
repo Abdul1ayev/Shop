@@ -7,6 +7,7 @@ import { FaSpinner } from "react-icons/fa";
 import { CiEdit, CiTrash } from "react-icons/ci";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
+import Image from "next/image";
 
 type Category = {
   id: string;
@@ -207,7 +208,9 @@ export default function Products() {
                     </td>
                     <td className="border p-3">
                       {product.images?.map((image, i) => (
-                        <img
+                        <Image
+                          width={40}
+                          height={40}
                           key={i}
                           src={image}
                           alt={`Product ${i + 1}`}
@@ -308,7 +311,9 @@ export default function Products() {
             <div className="flex flex-wrap gap-2">
               {formData.images.map((image, i) => (
                 <div key={i} className="relative w-10 h-10">
-                  <img
+                  <Image
+                    width={100}
+                    height={100}
                     src={image}
                     alt={`Product Image ${i + 1}`}
                     className="w-full h-full object-cover rounded-md"
@@ -398,7 +403,9 @@ export default function Products() {
           />
           <div className="flex flex-wrap gap-2">
             {newProduct.images.map((image, i) => (
-              <img
+              <Image
+                width={40}
+                height={40}
                 key={i}
                 src={image}
                 alt={`Product Image ${i + 1}`}
